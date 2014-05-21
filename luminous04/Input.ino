@@ -3,7 +3,7 @@ void input() {
 
   if (KSPBoardReceiveData()){
     pilot.setCursor(3,15);
-    pilot.print("Data!");
+    pilot.print("Data");
     deadtimeOld = now;
     switch(id) {
     case 0: //Handshake packet
