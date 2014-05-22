@@ -29,11 +29,12 @@ void initseg(byte SEG_DIN, byte SEG_LOAD, byte SEG_CLK)
 
 void sevenseg(int num, boolean dp,byte SEG_DIN, byte SEG_LOAD, byte SEG_CLK)
 {
+  int dpSelect;
   if(dp){
-    int dpSelect = 0x8F;
+    dpSelect = 0x8F;
   }
   else{
-    int dpSelect = 0x08;
+    dpSelect = 0x08;
   }
   char digSelect = 0xFF;//0x7F;
   for (int seg = 0; seg < 8; seg++) 

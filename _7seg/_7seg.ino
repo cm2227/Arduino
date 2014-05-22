@@ -1,21 +1,5 @@
 
 
-#define SEG_NUM 4
-#define SEG_DIN 2
-#define SEG_LOAD 3
-#define SEG_CLK 4
-
-
-/*
-int seg_segments[8] = { 
-  30, 31, 32, 33, 34, 35, 36, 37 
-};
-
-int seg_mux[4] = { 
-  22, 24, 26, 28 
-};*/
-
-
 unsigned char segDigits[] = 
 { 
   0xFC,  // = 0
@@ -35,7 +19,7 @@ void setup()
   Serial.begin(9600);
 
   pinMode(13, OUTPUT);     
-
+ initseg(2,3,4);
 
 }
 
