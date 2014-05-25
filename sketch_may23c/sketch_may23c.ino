@@ -151,11 +151,11 @@ textstring.toCharArray(text,8);
     for (int dig = 0; dig < 8; dig++)
     {
       //char curNum = getbyte(text[index]);
-      Serial.println(dig);  //index iteriert durch den übergebenen string
-      Serial.println(text[dig]); //text[index] ist das aktuell auszugebende Zeichen, entspricht curNum
-      Serial.println(getByte2(text[dig])); //getbyte soll analog zu getDigit das Bitmuster für ein Zeichen aus dem Alphabeth heraussuchen
+      Serial.println(7-dig);  //element 7-dig des strings entspricht der jeweils aktuellen Ziffer
+      Serial.println(text[7-dig]); //text[index] ist das aktuell auszugebende Zeichen, entspricht curNum
+      Serial.println(getByte2(text[7-dig])); //getbyte soll analog zu getDigit das Bitmuster für ein Zeichen aus dem Alphabeth heraussuchen
 
-      if ((getByte2(text[dig]) & segMask) && (digSelect & (1 << dig)))
+      if ((getByte2(text[7-dig]) & segMask) && (digSelect & (1 << dig)))
       {
         output |= 1 << dig;
       }
