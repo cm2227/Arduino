@@ -26,8 +26,9 @@ char alphabeth[] =
 {
   '0','1','2','3','4','5','6','7','8','9','-','L','h','o','b','H','d','U','F','C','E','D','P','A'}; 
 
+byte alphabeth2[128];
 
-unsigned char byteChar[] = 
+byte byteChar[] = 
 { 
   0xFC,  // = 0
   0x60,  // = 1
@@ -55,9 +56,12 @@ unsigned char byteChar[] =
   0xEE   // = A
 };
 
+
+
 void setup() 
 {                
   initseg(2,3,4);
+  initAlphabeth();
 }
 
 void loop() 
@@ -66,16 +70,13 @@ void loop()
   if((millis() % 1000) > 500){
     dp=true;
   } 
-  now=millis();
-
-  float freq = now-last;
 
 
-charseg(2,3,4,dp,"1234AbCd");
+//char testtext[]="1234AbCd";
+charseg(2,3,4,dp,"HALLOAFFE");
 //writeseg(2,3,4,dp,12345678);
   //writeseg(2,3,4,dp,freq);
 
-  last=millis();
 
 
 }
@@ -106,41 +107,55 @@ void initseg(int DIN, int LOAD , int CLK)
   digitalWrite(LOAD, HIGH);
 }
 
-char getbyte(char c)
+byte getByte(char c)
 {
   for (int i=0; i<24; i++)
   {
     if (c == alphabeth[i]){
       return byteChar[i];
     }
-    return 0x7E;
   }
+  return 0x8E;
 }
 
-void charseg(int DIN, int LOAD , int CLK, boolean dp, char text[])
+byte getByte2(char c)
+{
+  if(alphabeth2[c]!=0){
+    return alphabeth2[c];
+  }
+  else{
+    return 0x8E;
+  }
+
+}
+
+void charseg(int DIN, int LOAD , int CLK, boolean dp, String textstring)
 {
   char digSelect = 0xFF;//0x7F;
   int dpSelect = 0x08;//0x8F;
   if(dp){
     dpSelect = 0x08F;
   }
+ char text[9];
+ Serial.println(textstring);
+textstring.toCharArray(text,8);
 
-int index=0;
 
   for (int seg = 0; seg < 8; seg++) 
   {
     int output = 0;
+    //int index=0;
     //unsigned long numCopy = num;
     char segMask = 1 << (7 - seg);
 
     for (int dig = 0; dig < 8; dig++)
     {
       //char curNum = getbyte(text[index]);
-      Serial.println(index);
-      Serial.println(text[index]);
-      Serial.println(getbyte(text[index]));
+      Serial.println(dig);  //index iteriert durch den übergebenen string
+      Serial.println(text[dig]); //text[index] ist das aktuell auszugebende Zeichen, entspricht curNum
+      Serial.println(getByte2(text[dig])); //getbyte soll analog zu getDigit das Bitmuster für ein Zeichen aus dem Alphabeth heraussuchen
 
-      if ((getbyte(text[index]) & segMask) && (digSelect & (1 << dig)))
+      if ((getByte2(text[dig]) & segMask) && (digSelect & (1 << dig)))
       {
         output |= 1 << dig;
       }
@@ -149,7 +164,7 @@ int index=0;
       {
         output |= 1 << dig;//(7 - dig);
       }
-      index++;
+      //index++;
       //numCopy /= 10;
     }
 
@@ -201,6 +216,32 @@ void writeseg(int DIN, int LOAD , int CLK, boolean dp, unsigned long num)
   }
 }
 
+void initAlphabeth(){
+  alphabeth[48]=0xFC;  // = 0
+alphabeth[49]=  0x60;  // = 1
+alphabeth[50]=  0xDA;  // = 2
+alphabeth[51]=  0xF2;  // = 3
+alphabeth[52]=  0x66;  // = 4
+alphabeth[53]=  0xB6;  // = 5
+alphabeth[54]=  0xBE;  // = 6
+alphabeth[55]=  0xE0;  // = 7
+alphabeth[56]=  0xFE;  // = 8
+alphabeth[57]=  0xE6;  // = 9
+alphabeth[45]=  0x02;  // = -
+alphabeth[76]=  0x1C;  // = L
+alphabeth[104]=  0x2E;  // = h 
+alphabeth[111]=  0x3A;  // = o
+alphabeth[98]=  0x3E;  // = b
+alphabeth[72]=  0x6E;  // = H
+alphabeth[100]=  0x7A;  // = d
+alphabeth[85]=  0x7C;  // = U
+alphabeth[70]=  0x8E;  // = F
+alphabeth[67]=  0x9C;  // = C
+alphabeth[69]=  0x9E;  // = E
+alphabeth[68]=  0xC6;  // = ° (has to be referenced as D)
+alphabeth[80]=  0xCE;  // = P
+alphabeth[65]=  0xEE;  // = A
+}
 
 
 
