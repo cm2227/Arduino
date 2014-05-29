@@ -114,12 +114,12 @@ struct VesselData
   float MNDeltaV;         //42
   /*
   float dVTot;  //dv total
-  float dV; //dv current stage
-  float Atmo; //atmosphere height
-  float R;//current body radius
-  byte state; //Used to tell colossus wether MechJeb is active or not or wether the plugin can accept orders
-  String mjstatus; //comes from MechJeb
-  */
+   float dV; //dv current stage
+   float Atmo; //atmosphere height
+   float R;//current body radius
+   byte state; //Used to tell colossus wether MechJeb is active or not or wether the plugin can accept orders
+   String mjstatus; //comes from MechJeb
+   */
 };
 
 struct HandShakePacket
@@ -175,14 +175,21 @@ void setup(){
   // set up the LCD's number of columns and rows: 
 
   //initialize debug variables
-//  VData.Atmo=69000;
+  //  VData.Atmo=69000;
 
   //randomize(); //fill variables with random datas
+
+  //draw mask for eecom
 
   eecom.setCursor(0,1);
   eecom.print("ECharge ");
   eecom.setCursor(0,2);
   eecom.print("MProp ");
+
+  //draw mask for pilot as flight mode
+
+//insert init for 7-segments
+
 }
 
 void loop()
@@ -192,7 +199,7 @@ void loop()
 
 
   //poll flight mode
-  flightmode=0;
+prevfm=flightmode=0;
   if (!digitalRead(takeoffpin)){
     flightmode=1;
   }
@@ -201,76 +208,22 @@ void loop()
   }
 
 
-  //poll master alarm test
-
-  if (digitalRead(matestpin)==LOW){
-    masteralarm = true;
-  }
-
-  if (digitalRead(randompin)==LOW){
-    randomize();
-    masteralarm=false;
-  }
-
-  //poll master alarm reset
+  //poll master alarm quit
   if (digitalRead(maquitpin)==LOW){
     masteralarm = false;
   }
 
   //receive serial input
   input();
-  
-  //write input to variables
 
   //draw conclusions
 
-
-  //update pilot display
-  pilot.setCursor(0,1);
-  pilot.print("AP ");
-  pilot.print(VData.AP);
-  pilot.setCursor(0,2);
-  pilot.print("PE ");
-  pilot.print(VData.PE);
-  pilot.setCursor(0,0);
-  pilot.print("                    ");
-  pilot.setCursor(0,0);
-    
-    switch (flightmode) {
-  case 0:    // flight
-  pilot.print("h:");
-  if(VData.Alt<10000)
-  {
-    pilot.print(VData.Alt,1);
-    pilot.print("m");
-  }
-  else
-  {
-    pilot.print(VData.Alt/1000,1);
-    pilot.print("km");
-  }
-    pilot.print(" inc:");
-    pilot.print(VData.inc,1);
-    pilot.write(223);
-    break;
-  case 1:    // take-off
-  pilot.print("VVI");
-    pilot.print(VData.VVI);
-    pilot.print(" g:");
-    pilot.print(VData.G);
-    break;
-  case 2: // landing
-  pilot.print("SV.");
-    pilot.print(VData.Vsurf,1);
-    pilot.print("m/s, h:");
-    pilot.print(VData.RAlt,1);
-    break;
-    }
-
+  //if flightmode has changed
   if (flightmode != prevfm){
-    //pilot.clear();
     pilot.setCursor(0,3);
     pilot.print("Mode: ");
+
+    //draw mask according to flightmode
     switch (flightmode){
     case 0:
       pilot.print("flight  ");
@@ -283,10 +236,67 @@ void loop()
       break;
     }
   }
+
+
+  pilot.setCursor(0,1);
+  pilot.print("AP ");
+  pilot.print(VData.AP);
+  pilot.setCursor(0,2);
+  pilot.print("PE ");
+  pilot.print(VData.PE);
+  pilot.setCursor(0,0);
+  pilot.print("                    ");
+  pilot.setCursor(0,0);
+
+//things to display under all circumstances
+//display dV total at 7seg434 
+//display dV stage at 7seg434
+
+//if dVtot > 10.000 display 9999
+//if 10.000 > dVtot > 100 display dVtot
+//7seg434 = dVtot * 10000 + dv stage
+//if dVTot < 100 display XX:XX
+//same for dVstage
+
+
+  switch (flightmode) {
+  case 0:    // flight
+    pilot.print("h:");
+    if(VData.Alt<10000)
+    {
+      pilot.print(VData.Alt,1);
+      pilot.print("m");
+    }
+    else
+    {
+      pilot.print(VData.Alt/1000,1);
+      pilot.print("km");
+    }
+    pilot.print(" inc:");
+    pilot.print(VData.inc,1);
+    pilot.write(223);
+    //insert 7-segment code for flight mode hear
+    //display apo as 81
+    break;
+  case 1:    // take-off
+    pilot.print("VVI");
+    pilot.print(VData.VVI);
+    pilot.print(" g:");
+    pilot.print(VData.G);
+    break;
+  case 2: // landing
+    pilot.print("SV.");
+    pilot.print(VData.Vsurf,1);
+    pilot.print("m/s, h:");
+    pilot.print(VData.RAlt,1);
+    break;
+  }
+
+
   //pilot.setCursor(13,2);
   //pilot.print("dV");
   //pilot.print(VData.dV,1);
-   
+
   prevfm=flightmode;
 
   //display results in analog instruments
@@ -318,7 +328,7 @@ void loop()
   eecom.print(now,10);
   eecom.print("s ");  
 
- 
+
 
   //master alarm blink & sound if necessary
 
@@ -342,13 +352,14 @@ void loop()
     }
     //output();
   }
-  
+
   /*
   if(millis() - lastrandom > 30000) {
-      lastrandom = millis();   
-      randomize();
-    }*/
+   lastrandom = millis();   
+   randomize();
+   }*/
 }
+
 
 
 

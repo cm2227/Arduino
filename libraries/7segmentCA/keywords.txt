@@ -1,0 +1,26 @@
+#######################################
+# Syntax Coloring Map For 7SegmentCA
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+7segment	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+string	KEYWORD2
+number	KEYWORD2
+scroll	KEYWORD2
+noscrollKEYWORD2
+nozero	KEYWORD2
+zero	KEYWORD2
+dp		KEYWORD2
+nodp	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
